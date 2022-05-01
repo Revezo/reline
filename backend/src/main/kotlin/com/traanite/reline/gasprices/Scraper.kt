@@ -82,12 +82,13 @@ class Scraper {
 //                        println("Group 5: ${m.group(5)}")
                     println("Group 6: ${m.group(6)}")
                 } else {
-                    val p1 = Pattern.compile("(.*): The price of octane-95 gasoline is (.*) Euro per liter.")
+                    val p1 = Pattern.compile("(.*): The price of (.*) is (.*) Euro per liter.")
                     val m1 = p1.matcher(text)
                     if (m1.find()) {
 //                        println("Group 0: ${m.group(0)}")
-                        println("Group 1: ${m.group(1)}")
-                        println("Group 2: ${m.group(2)}")
+                        println("Group 1: ${m1.group(1)}")
+                        println("Group 2: ${m1.group(2)}")
+                        println("Group 2: ${m1.group(3)}")
                     }
                 }
                 println()
