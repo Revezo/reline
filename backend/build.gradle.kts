@@ -25,6 +25,8 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 
+	implementation("io.github.resilience4j:resilience4j-reactor:1.7.1")
+	implementation("io.github.resilience4j:resilience4j-ratelimiter:1.7.1")
 	implementation("org.jsoup:jsoup:1.14.3")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("io.projectreactor:reactor-test")
