@@ -3,9 +3,20 @@ fuelPrices:
     rate: 600000
   rateLimit:
     refreshPeriodSeconds: 1
-    limitForPeriod: 5
+    limitForPeriod: 20
     timeoutDurationMinutes: 1
   site:
     baseUrl: https://www.globalpetrolprices.com/
     dieselUri: /diesel_prices/
     gasUri: /gasoline_prices/
+
+spring:
+  data:
+    mongodb:
+      uri: mongodb://root:example@localhost:27017/test?authSource=admin
+      database: test
+      authentication-database: admin
+logging:
+  level:
+    root: INFO
+    com.traanite.reline.*: DEBUG

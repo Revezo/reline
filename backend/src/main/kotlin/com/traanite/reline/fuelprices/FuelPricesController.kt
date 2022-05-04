@@ -1,26 +1,42 @@
 package com.traanite.reline.fuelprices
 
+import com.traanite.reline.fuelprices.model.CountryFuelPriceData
+import com.traanite.reline.fuelprices.services.FuelPricesService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Mono
+import java.math.BigDecimal
 
 @RestController
-@RequestMapping("/prices")
-class FuelPricesController(val fuelPricesStore: FuelPricesStore) {
-    private val gasolineUri = "/gasoline_prices/"
-    private val dieselUri = "/diesel_prices/"
+@RequestMapping("/fuelprices")
+class FuelPricesController(private val fuelPricesService: FuelPricesService) {
 
-    @GetMapping("gas")
-    fun getGasolinePrices(): Mono<Map<Country, CountryFuelPriceData>> {
-        val scraper = Scraper()
-        return scraper.scrape(FuelType.Gasoline, gasolineUri).collectMap { entry -> entry.country}
+    @GetMapping
+    fun getStoredGasolinePrices(): Mono<FuelPricesResponse> {
+        return fuelPricesService.findAll().collectList().map { FuelPricesResponse(it) }
     }
-
-    @GetMapping("diesel")
-    fun getDieselPrices(): Mono<Map<Country, CountryFuelPriceData>> {
-        val scraper = Scraper()
-        return scraper.scrape(FuelType.Diesel, dieselUri).collectMap { entry -> entry.country}
-    }
-
 }
+
+data class FuelPricesResponse(val values: List<CountryFuelPriceData>) {
+}
+
+data class CountryFuelPriceDataResponse(
+    val country: String,
+    val gasolineData: FuelPriceResponse,
+    val dieselData: FuelPriceResponse
+) {
+}
+
+data class ComplexFuelPriceResponse(
+    val averagePrice: BigDecimal,
+    val minimalPrice: BigDecimal,
+    val maximalPrice: BigDecimal
+) :
+    FuelPriceResponse(averagePrice) {
+}
+
+data class SimpleFuelPriceResponse(val averagePrice: BigDecimal) : FuelPriceResponse(averagePrice) {
+}
+
+abstract class FuelPriceResponse(averagePrice: BigDecimal)
