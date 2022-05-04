@@ -1,16 +1,12 @@
 package com.traanite.reline
 
-import com.traanite.reline.gasprices.Scraper
-import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import org.springframework.scheduling.annotation.EnableScheduling
 
 @SpringBootApplication
-class RelineApplication : CommandLineRunner {
-	override fun run(vararg args: String?) {
-		Scraper().run()
-	}
-}
+@EnableScheduling
+class RelineApplication
 
 fun main(args: Array<String>) {
 	runApplication<RelineApplication>(*args)

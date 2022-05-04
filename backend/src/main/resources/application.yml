@@ -1,0 +1,11 @@
+fuelPrices:
+  scheduledUpdate:
+    rate: 600000
+  rateLimit:
+    refreshPeriodSeconds: 1
+    limitForPeriod: 5
+    timeoutDurationMinutes: 1
+  site:
+    baseUrl: https://www.globalpetrolprices.com/
+    dieselUri: /diesel_prices/
+    gasUri: /gasoline_prices/
