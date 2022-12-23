@@ -1,4 +1,0 @@
-allprojects {
-    group = 'org.traanite'
-    version = '0.0.1'
-}
