@@ -18,7 +18,9 @@ import java.util.*
 import java.util.regex.Pattern
 
 class GlobalPetrolPricesScraper {
-    private val log: Logger = LoggerFactory.getLogger(javaClass)
+    companion object {
+        val log: Logger = LoggerFactory.getLogger(GlobalPetrolPricesScraper::class.java)
+    }
 
     private val refreshPeriodSeconds: Long = 1
     private val limitForPeriod = 20

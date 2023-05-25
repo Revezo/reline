@@ -5,12 +5,14 @@ import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 
 class FuelPricesScheduler(private val fuelPricesUpdater: FuelPricesUpdater) {
-
-    private val log: Logger = LoggerFactory.getLogger(javaClass)
-    @Scheduled(fixedRate = 600000)
-    fun updateFuelPrices() {
-        log.debug("Schedule update")
-        fuelPricesUpdater.updateGasolinePrices()
+    companion object {
+        val log: Logger = LoggerFactory.getLogger(FuelPricesScheduler::class.java)
     }
 
+    @Scheduled(fixedRate = 600000)
+    fun updateFuelPrices() {
+        // todo some operation lock?
+        log.debug("Schedule update")
+        fuelPricesUpdater.updateGasolinePrices().subscribe()
+    }
 }
