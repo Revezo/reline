@@ -26,6 +26,6 @@ class CacheConfig : CachingConfigurer {
                 )
             }
         }
-        return cacheManager;
+        return cacheManager
     }
 }
