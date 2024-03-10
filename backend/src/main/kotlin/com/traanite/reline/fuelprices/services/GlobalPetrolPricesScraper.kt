@@ -1,6 +1,9 @@
 package com.traanite.reline.fuelprices.services
 
-import com.traanite.reline.fuelprices.model.*
+import com.traanite.reline.fuelprices.model.Country
+import com.traanite.reline.fuelprices.model.CountryFuelPriceData
+import com.traanite.reline.fuelprices.model.FuelPrice
+import com.traanite.reline.fuelprices.model.FuelType
 import io.github.resilience4j.ratelimiter.RateLimiter
 import io.github.resilience4j.ratelimiter.RateLimiterConfig
 import io.github.resilience4j.reactor.ratelimiter.operator.RateLimiterOperator
@@ -111,6 +114,7 @@ class GlobalPetrolPricesScraper {
             .transformDeferred(RateLimiterOperator.of(this.rateLimiter))
     }
 
+    // todo this shows the average price since around 2015 till now, not the latest price
     private fun processValuePage(pageHtml: String, fuelType: FuelType): Mono<Pair<Country, FuelPrice>> {
         val doc = Jsoup.parseBodyFragment(pageHtml)
         val newsHeadlines = doc.select("div.tipInfo > div:nth-child(1)")
