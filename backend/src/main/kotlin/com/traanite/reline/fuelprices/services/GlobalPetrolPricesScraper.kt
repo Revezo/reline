@@ -22,8 +22,9 @@ class GlobalPetrolPricesScraper {
         val log: Logger = LoggerFactory.getLogger(GlobalPetrolPricesScraper::class.java)
     }
 
+    private val currency = Currency.getInstance("EUR")
     private val refreshPeriodSeconds: Long = 1
-    private val limitForPeriod = 20
+    private val limitForPeriod = 5
     private val timeoutDurationMinutes: Long = 5
 
     private val baseUri = "https://www.globalpetrolprices.com/"
@@ -51,8 +52,8 @@ class GlobalPetrolPricesScraper {
                 idFlux.collectList().map { fuelPricesOfCountry ->
                     CountryFuelPriceData(
                         idFlux.key(),
-                        fuelPricesOfCountry.firstOrNull { it.fuelType() == FuelType.Gasoline } ?: EmptyFuelPrice(FuelType.Gasoline),
-                        fuelPricesOfCountry.firstOrNull { it.fuelType() == FuelType.Diesel } ?: EmptyFuelPrice(FuelType.Diesel))
+                        fuelPricesOfCountry.firstOrNull { it.fuelType == FuelType.Gasoline } ?: FuelPrice(FuelType.Gasoline, currency),
+                        fuelPricesOfCountry.firstOrNull { it.fuelType == FuelType.Diesel } ?: FuelPrice(FuelType.Diesel, currency))
                 }
             }
     }
@@ -95,7 +96,7 @@ class GlobalPetrolPricesScraper {
         return webClient.post()
             .uri(countryPageUri)
             .header("Content-Type", "application/x-www-form-urlencoded")
-            .body(Mono.just("literGalon=1&currency=EUR"), String::class.java)
+            .body(Mono.just("literGalon=1&currency=${currency.currencyCode}"), String::class.java)
             .retrieve()
             .toBodilessEntity()
             .transformDeferred(RateLimiterOperator.of(this.rateLimiter))
@@ -117,29 +118,34 @@ class GlobalPetrolPricesScraper {
         log.debug(text)
 
         val p =
-            Pattern.compile("(.*)The average value for (.*) during that period was (.*) Euro with a minimum of (.*) Euro on (.*) and a maximum of (.*) Euro on (.*).")
+            Pattern.compile("(.*)We show (.*) price data for (.*) from (.*) to (.*). The average (.*) price during that period is ${currency.currencyCode} (.*) per liter with a minimum of ${currency.currencyCode} (.*) on (.*) and a maximum of ${currency.currencyCode} (.*) on (.*).")
         val m = p.matcher(text)
         if (m.find()) {
-            log.debug("Country: ${m.group(2)}")
-            log.debug("Avg price: ${m.group(3)}")
-            log.debug("Min price: ${m.group(4)}")
-            log.debug("Max price: ${m.group(6)}")
+            val countryValue = m.group(3)
+            val averagePriceValue = m.group(7)
+            log.debug("Country: $countryValue")
+            log.debug("Avg price: $averagePriceValue")
 
-            val country = Country(m.group(2))
-            return (country to ComplexFuelPrice(
+            val country = Country(countryValue)
+            return (country to FuelPrice(
                 fuelType,
-                BigDecimal(m.group(3)),
-                BigDecimal(m.group(4)),
-                BigDecimal(m.group(6)), Currency.getInstance("EUR")
-            )).toMono()
+                BigDecimal(averagePriceValue.replace(",", "")),
+                currency))
+                .toMono()
         } else {
-            val p1 = Pattern.compile("(.*): The price of (.*) is (.*) Euro per (litre|liter). (.*)")
+            val p1 = Pattern.compile("(.*): The price of (.*) is (.*) ${currency.displayName} per (litre|liter). (.*)")
             val m1 = p1.matcher(text)
             if (m1.find()) {
-                log.debug("Country: ${m1.group(1)}")
-                log.debug("Avg price: ${m1.group(3)}")
-                val country = Country(m1.group(1))
-                return (country to SimpleFuelPrice(fuelType, BigDecimal(m1.group(3)), Currency.getInstance("EUR"))).toMono()
+                val countryValue = m1.group(1)
+                val averageFuelPriceValue = m1.group(3)
+                log.debug("Country: $countryValue")
+                log.debug("Avg price: $averageFuelPriceValue")
+                val country = Country(countryValue)
+                return (country to FuelPrice(
+                    fuelType,
+                    BigDecimal(averageFuelPriceValue),
+                    currency))
+                    .toMono()
             }
         }
         return Mono.empty()

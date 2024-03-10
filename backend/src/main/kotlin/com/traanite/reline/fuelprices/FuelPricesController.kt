@@ -19,23 +19,12 @@ class FuelPricesController(private val fuelPricesService: FuelPricesService) {
 
     private fun toFuelPricesResponse(fuelPricesData: List<CountryFuelPriceData>): FuelPricesResponse {
         val pricesData = fuelPricesData.map {
-            CountryFuelPriceDataResponse(it.country.value,
-                toFuelPriceDataResponse(it.gasolineData),
-                toFuelPriceDataResponse(it.gasolineData))
+            CountryFuelPriceDataResponse(
+                it.country.value,
+                it.gasolineData.price,
+                it.dieselData.price)
         }
         return FuelPricesResponse(pricesData)
-    }
-
-    private fun toFuelPriceDataResponse(fuelPrice: FuelPrice) : FuelPriceResponse {
-        return when (fuelPrice) {
-            is SimpleFuelPrice -> FuelPriceResponse(fuelPrice.price, BigDecimal(-1), BigDecimal(-1))
-            is ComplexFuelPrice -> FuelPriceResponse(
-                fuelPrice.averagePrice,
-                fuelPrice.minimalPrice,
-                fuelPrice.maximalPrice
-            )
-            else -> FuelPriceResponse(BigDecimal(-1), BigDecimal(-1), BigDecimal(-1))
-        }
     }
 
 }
@@ -45,13 +34,7 @@ data class FuelPricesResponse(val values: List<CountryFuelPriceDataResponse>) {
 
 data class CountryFuelPriceDataResponse(
     val country: String,
-    val gasolineData: FuelPriceResponse,
-    val dieselData: FuelPriceResponse
+    val gasolinePrice: BigDecimal,
+    val dieselPrice: BigDecimal
 ) {
 }
-
-data class FuelPriceResponse(
-    val averagePrice: BigDecimal,
-    val minimalPrice: BigDecimal,
-    val maximalPrice: BigDecimal
-) {}
