@@ -1,5 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {Observable} from "rxjs";
+import {FuelPrices} from "../models/fuel-prices";
 
 @Injectable({
   providedIn: 'root'
@@ -7,7 +9,7 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 export class FuelPricesService {
   constructor(private httpClient: HttpClient) {  }
 
-  getFuelPrices() {
+  getFuelPrices(): Observable<FuelPrices> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json',
@@ -15,6 +17,6 @@ export class FuelPricesService {
       })
     };
 
-    return this.httpClient.get('http://localhost:8080/fuelprices', httpOptions);
+    return this.httpClient.get<FuelPrices>('http://localhost:8080/fuelprices', httpOptions);
   }
 }
