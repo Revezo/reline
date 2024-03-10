@@ -1,6 +1,6 @@
 package com.traanite.reline.fuelprices
 
-import com.traanite.reline.fuelprices.model.*
+import com.traanite.reline.fuelprices.model.CountryFuelPriceData
 import com.traanite.reline.fuelprices.services.FuelPricesService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
