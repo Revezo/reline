@@ -34,6 +34,8 @@ dependencies {
 	implementation("org.jsoup:jsoup:1.17.2")
 	implementation("com.google.guava:guava:33.0.0-jre")
 
+	implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.3.0")
+
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("org.springframework.security:spring-security-test")
