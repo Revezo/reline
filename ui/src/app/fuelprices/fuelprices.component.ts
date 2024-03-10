@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {MatTableDataSource, MatTableModule} from '@angular/material/table';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
+import {FuelPricesService} from "../services/fuel-prices.service";
 
 export interface PeriodicElement {
   name: string;
@@ -39,7 +40,8 @@ export class FuelPricesComponent {
   displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
   dataSource = new MatTableDataSource(ELEMENT_DATA);
 
-  constructor() {
+  constructor(private fuelPricesService: FuelPricesService) {
+    fuelPricesService.getFuelPrices().subscribe(value => console.log(value))
     this.dataSource.filterPredicate = (data, filter) => {
       return data.name.toLowerCase().includes(filter) || data.symbol.toLowerCase().includes(filter);
     }

@@ -34,9 +34,9 @@ class SecurityConfig {
             .cors {
                 it.configurationSource {
                     val corsConfiguration = CorsConfiguration()
-                    corsConfiguration.allowedOrigins = listOf("*");
-                    corsConfiguration.allowedMethods = listOf("*");
-                    corsConfiguration.allowedHeaders = listOf("*");
+                    corsConfiguration.allowedOrigins = listOf("*")
+                    corsConfiguration.allowedMethods = listOf("*")
+                    corsConfiguration.allowedHeaders = listOf("*")
                     corsConfiguration
                 }
 
