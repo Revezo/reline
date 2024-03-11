@@ -11,6 +11,7 @@ import org.jsoup.Jsoup
 import org.jsoup.select.Elements
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -20,6 +21,7 @@ import java.time.Duration
 import java.util.*
 import java.util.regex.Pattern
 
+@Service
 class GlobalPetrolPricesScraper {
     companion object {
         val log: Logger = LoggerFactory.getLogger(GlobalPetrolPricesScraper::class.java)
@@ -114,43 +116,47 @@ class GlobalPetrolPricesScraper {
             .transformDeferred(RateLimiterOperator.of(this.rateLimiter))
     }
 
-    // todo this shows the average price since around 2015 till now, not the latest price
     private fun processValuePage(pageHtml: String, fuelType: FuelType): Mono<Pair<Country, FuelPrice>> {
         val doc = Jsoup.parseBodyFragment(pageHtml)
+        val tableFuelPrice = doc.select("#graphic > table:nth-child(1) > tbody:nth-child(2) > tr:nth-child(1) > td:nth-child(2)")
+        val headerWithCountryName = doc.select("#graphPageLeft > h1:nth-child(1)")
+
+        if (!tableFuelPrice.isEmpty()) {
+            val fuelPriceValue = tableFuelPrice.text()
+            log.debug("fuelPriceValue: $fuelPriceValue")
+            log.debug("headerWithCountryName: ${headerWithCountryName.text()}")
+            val p =
+                Pattern.compile("(.*) (Diesel|Gasoline) prices, (.*)")
+            val m = p.matcher(headerWithCountryName.text())
+
+            if (m.find()) {
+                val countryValue = m.group(1)
+                val country = Country(countryValue)
+                return (country to FuelPrice(
+                    fuelType,
+                    BigDecimal(fuelPriceValue.replace(",", "")),
+                    currency))
+                    .toMono()
+            }
+        }
+
         val newsHeadlines = doc.select("div.tipInfo > div:nth-child(1)")
         val text = newsHeadlines.text()
         log.debug(text)
 
-        val p =
-            Pattern.compile("(.*)We show (.*) price data for (.*) from (.*) to (.*). The average (.*) price during that period is ${currency.currencyCode} (.*) per liter with a minimum of ${currency.currencyCode} (.*) on (.*) and a maximum of ${currency.currencyCode} (.*) on (.*).")
-        val m = p.matcher(text)
-        if (m.find()) {
-            val countryValue = m.group(3)
-            val averagePriceValue = m.group(7)
+        val p1 = Pattern.compile("(.*): The price of (.*) is (.*) ${currency.displayName} per (litre|liter). (.*)")
+        val m1 = p1.matcher(text)
+        if (m1.find()) {
+            val countryValue = m1.group(1)
+            val fuelPriceValue = m1.group(3)
+            log.debug("fuelPriceValue: $fuelPriceValue")
             log.debug("Country: $countryValue")
-            log.debug("Avg price: $averagePriceValue")
-
             val country = Country(countryValue)
             return (country to FuelPrice(
                 fuelType,
-                BigDecimal(averagePriceValue.replace(",", "")),
+                BigDecimal(fuelPriceValue),
                 currency))
                 .toMono()
-        } else {
-            val p1 = Pattern.compile("(.*): The price of (.*) is (.*) ${currency.displayName} per (litre|liter). (.*)")
-            val m1 = p1.matcher(text)
-            if (m1.find()) {
-                val countryValue = m1.group(1)
-                val averageFuelPriceValue = m1.group(3)
-                log.debug("Country: $countryValue")
-                log.debug("Avg price: $averageFuelPriceValue")
-                val country = Country(countryValue)
-                return (country to FuelPrice(
-                    fuelType,
-                    BigDecimal(averageFuelPriceValue),
-                    currency))
-                    .toMono()
-            }
         }
         return Mono.empty()
     }

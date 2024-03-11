@@ -3,8 +3,11 @@ package com.traanite.reline.fuelprices.services
 import com.traanite.reline.fuelprices.model.CountryFuelPriceData
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.scheduling.annotation.Scheduled
+import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 
+@Service
 class FuelPricesUpdater(
     private val fuelPricesService: FuelPricesService,
     private val pricesScraper: GlobalPetrolPricesScraper
@@ -13,10 +16,15 @@ class FuelPricesUpdater(
         val log: Logger = LoggerFactory.getLogger(GlobalPetrolPricesScraper::class.java)
     }
 
-    fun updateGasolinePrices(): Flux<CountryFuelPriceData> {
+    @Scheduled(fixedRate = 600000)
+    private fun updateFuelPricesScheduledTask() {
+        log.debug("Updating fuel prices")
+        updateFuelPrices().subscribe()
+    }
+
+    fun updateFuelPrices(): Flux<CountryFuelPriceData> {
         log.debug("Start updating procedure")
         val fuelPriceData = pricesScraper.getPrices()
-        log.debug("Retrieved prices data")
         return fuelPricesService.saveAll(fuelPriceData)
     }
 }

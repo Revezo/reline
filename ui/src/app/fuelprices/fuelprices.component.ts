@@ -15,7 +15,7 @@ import {CountryFuelPriceData} from "../models/country-fuel-price-data";
 })
 
 export class FuelPricesComponent {
-  displayedColumns: string[] = ['country', 'gasolinePrice', 'dieselPrice'];
+  displayedColumns: string[] = ['country', 'gasolinePrice', 'dieselPrice', 'currency'];
   tableData: CountryFuelPriceData[] = []
   matTableDataSource = new MatTableDataSource(this.tableData);
 
