@@ -22,7 +22,7 @@ class CacheConfig : CachingConfigurer {
                     name,
                     CacheBuilder.newBuilder()
                         .expireAfterWrite(6, TimeUnit.HOURS)
-                        .maximumSize(100).build<Any, Any>().asMap(), false
+                        .maximumSize(200).build<Any, Any>().asMap(), false
                 )
             }
         }

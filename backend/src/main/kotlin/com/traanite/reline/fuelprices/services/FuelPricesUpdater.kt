@@ -16,7 +16,7 @@ class FuelPricesUpdater(
         val log: Logger = LoggerFactory.getLogger(GlobalPetrolPricesScraper::class.java)
     }
 
-    @Scheduled(fixedRate = 600000)
+    @Scheduled(cron = "\${fuel-prices.scheduled-update.cron}")
     private fun updateFuelPricesScheduledTask() {
         log.debug("Updating fuel prices")
         updateFuelPrices().subscribe()

@@ -5,6 +5,7 @@ import com.traanite.reline.fuelprices.model.CountryFuelPriceData
 import com.traanite.reline.fuelprices.repository.FuelPricesRepository
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import java.math.BigDecimal
 import java.util.*
 
@@ -17,22 +18,28 @@ class FuelPricesService(private val pricesRepository: FuelPricesRepository,
     }
 
     fun findAllInWithCurrencyConversion(currency: Currency): Flux<CountryFuelPriceDataDto> {
-        return pricesRepository.findAll().map { toCurrencyConvertedDto(it, currency) }
+        return pricesRepository.findAll().flatMap { toCurrencyConvertedDto(it, currency) }
     }
 
-    private fun toCurrencyConvertedDto(fuelPriceData: CountryFuelPriceData, currency: Currency): CountryFuelPriceDataDto {
-        return CountryFuelPriceDataDto(
-            fuelPriceData.country.value,
-            currency.currencyCode,
-            currencyConverter.convertToCurrency(
-                fuelPriceData.gasolineData.price,
-                fuelPriceData.gasolineData.currency.currencyCode,
-                currency.currencyCode),
+    private fun toCurrencyConvertedDto(fuelPriceData: CountryFuelPriceData, currency: Currency): Mono<CountryFuelPriceDataDto> {
+        return currencyConverter.convertToCurrency(
+            fuelPriceData.gasolineData.price,
+            fuelPriceData.gasolineData.currency,
+            currency
+        ).zipWith(
             currencyConverter.convertToCurrency(
                 fuelPriceData.dieselData.price,
-                fuelPriceData.dieselData.currency.currencyCode,
-                currency.currencyCode)
-        )
+                fuelPriceData.dieselData.currency,
+                currency
+            )
+        ).map {
+            CountryFuelPriceDataDto(
+                fuelPriceData.country.value,
+                currency.currencyCode,
+                it.t1,
+                it.t2
+            )
+        }
     }
 }
 
@@ -41,5 +48,4 @@ data class CountryFuelPriceDataDto(
     val currencyCode: String,
     val gasolinePrice: BigDecimal,
     val dieselPrice: BigDecimal
-) {
-}
+)
