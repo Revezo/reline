@@ -9,6 +9,7 @@ class CurrencyCacher(private val currencyConversionRateRetriever: CurrencyConver
 
     // todo
 
+
     @Scheduled(fixedRate = 3600000)
     fun cacheCurrencyConversionRates() {
         Currency.getAvailableCurrencies()

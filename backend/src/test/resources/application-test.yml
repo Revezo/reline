@@ -1,0 +1,3 @@
+fuel-prices:
+  scheduled-update:
+    cron: "-"

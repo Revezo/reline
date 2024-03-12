@@ -1,6 +1,6 @@
-fuelPrices:
-  scheduledUpdate:
-    rate: 600000
+fuel-prices:
+  scheduled-update:
+    cron: 0 0/5 * * * ? # every 5 minutes
   rateLimit:
     refreshPeriodSeconds: 1
     limitForPeriod: 20
@@ -9,6 +9,15 @@ fuelPrices:
     baseUrl: https://www.globalpetrolprices.com/
     dieselUri: /diesel_prices/
     gasUri: /gasoline_prices/
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+currency:
+  api:
+    api-key: todo
+    base-url: https://api.api-ninjas.com
+    endpoint: /v1/convertcurrency
 
 spring:
   data:
@@ -16,6 +25,9 @@ spring:
       uri: mongodb://root:example@localhost:27017/test?authSource=admin
       database: test
       authentication-database: admin
+  security:
+    user:
+      password: password
 logging:
   level:
     root: INFO
