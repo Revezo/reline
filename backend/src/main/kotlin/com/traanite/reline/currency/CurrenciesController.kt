@@ -8,6 +8,8 @@ import java.util.*
 @RestController
 class CurrenciesController {
 
+    // todo limit currencies to the ones we support
+    // todo most important currencies on top (EUR, USD, GPB, PLN)
     @GetMapping("/currencies")
     fun getCurrencies(): Mono<AvailableCurrenciesResponse> {
         return Mono.just(AvailableCurrenciesResponse(
