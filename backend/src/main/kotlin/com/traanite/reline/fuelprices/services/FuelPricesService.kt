@@ -28,15 +28,18 @@ class FuelPricesService(
         return pricesRepository.findAll()
             .flatMap { Flux.just(it.gasolineData.currency, it.dieselData.currency) }
             .distinct()
-            .filter { it != currency }
             .flatMap {
-                currencyConversionRateRetriever.currencyConversionRate(it, currency)
-                    .flatMap { conversionRate ->
-                        log.info { "Conversion rate from $it to $currency: $conversionRate" }
-                        Mono.just(
-                            Tuple.of(it, conversionRate)
-                        )
-                    }
+                if (it == currency) {
+                    Mono.just(Tuple.of(it, BigDecimal.ONE))
+                } else {
+                    currencyConversionRateRetriever.currencyConversionRate(it, currency)
+                        .flatMap { conversionRate ->
+                            log.info { "Conversion rate from $it to $currency: $conversionRate" }
+                            Mono.just(
+                                Tuple.of(it, conversionRate)
+                            )
+                        }
+                }
             }
             .collectMap({ it._1 }, { it._2 })
             .flatMapMany { currencyConversions ->

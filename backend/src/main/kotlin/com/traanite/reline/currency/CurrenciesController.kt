@@ -15,7 +15,7 @@ class CurrenciesController {
         ))
     }
 
-    data class AvailableCurrenciesResponse(val currencies: List<CurrencyResponse>)
+    data class AvailableCurrenciesResponse(val values: List<CurrencyResponse>)
     data class CurrencyResponse(
         val name: String,
         val code: String
