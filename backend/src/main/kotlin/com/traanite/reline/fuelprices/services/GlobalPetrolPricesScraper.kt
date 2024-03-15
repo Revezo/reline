@@ -36,6 +36,7 @@ class GlobalPetrolPricesScraper {
     private val dieselUri = "/diesel_prices/"
     private val gasolineUri = "/gasoline_prices/"
 
+    // todo rate limiting doesn't work as expected here, causes HTTP 520
     private val rateLimiter = RateLimiter.of(
         "global-petrol-prices-rate-limiter",
         RateLimiterConfig.custom()
