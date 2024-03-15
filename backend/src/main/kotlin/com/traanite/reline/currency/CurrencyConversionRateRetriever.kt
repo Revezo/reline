@@ -17,6 +17,7 @@ class CurrencyConversionRateRetriever(private val webClient: WebClient,
 
     @Cacheable("currencyConversionRate")
     fun currencyConversionRate(fromCurrency: Currency, toCurrency: Currency): Mono<BigDecimal> {
+        logger.debug { "Retrieving currency conversion rate from $fromCurrency to $toCurrency" }
         return webClient.get()
             .uri { uriBuilder ->
                 uriBuilder.path(currencyApiProperties.endpoint)
