@@ -19,10 +19,12 @@ class FuelPricesService(
 ) {
 
     fun saveAll(fuelPriceData: Flux<CountryFuelPriceData>): Flux<CountryFuelPriceData> {
+        log.debug { "Saving fuel prices" }
         return pricesRepository.saveAll(fuelPriceData)
     }
 
     fun findAllInWithCurrencyConversion(currency: Currency): Flux<CountryFuelPriceDataDto> {
+        log.debug { "Finding all fuel prices in currency: $currency" }
         return pricesRepository.findAll().flatMap { toCurrencyConvertedDto(it, currency) }
     }
 

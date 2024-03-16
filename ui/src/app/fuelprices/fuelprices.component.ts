@@ -36,6 +36,7 @@ export class FuelPricesComponent implements OnInit {
 
   myControl = new FormControl<string | Currency>('');
   filteredOptions: Observable<Currency[]> | undefined;
+  private appliedCountryFilterValue: string | undefined;
 
   constructor(private fuelPricesService: FuelPricesService, private currenciesService: CurrenciesService) {
     console.log("CONSTRUCTOR")
@@ -72,6 +73,9 @@ export class FuelPricesComponent implements OnInit {
     this.fuelPricesService.getFuelPrices(selectedValue.code).subscribe(value => {
       console.log(value);
       this.matTableDataSource = new MatTableDataSource(value.values);
+      if (this.appliedCountryFilterValue) {
+        this.matTableDataSource.filter = this.appliedCountryFilterValue;
+      }
     });
   }
 
@@ -81,7 +85,8 @@ export class FuelPricesComponent implements OnInit {
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.matTableDataSource.filter = filterValue.trim().toLowerCase();
+    this.appliedCountryFilterValue = filterValue.trim().toLowerCase();
+    this.matTableDataSource.filter = this.appliedCountryFilterValue;
   }
 
   private _filter(value: string): Currency[] {

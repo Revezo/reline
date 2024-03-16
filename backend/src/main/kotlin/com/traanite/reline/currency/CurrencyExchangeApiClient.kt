@@ -48,10 +48,6 @@ class CurrencyExchangeApiClient(
             }
     }
 
-    data class CurrenciesResponse (
-        val currencies: Map<String, String>
-    )
-
     data class CurrencyExchangeRatesResponse(
         val timestamp: Int,
         val base: String,
