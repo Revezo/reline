@@ -47,10 +47,10 @@ class CurrencyExchangeApiClient(
                 logger.debug { "Currencies: $it" }
             }
     }
-
-    data class CurrencyExchangeRatesResponse(
-        val timestamp: Int,
-        val base: String,
-        val rates: Map<String, BigDecimal>
-    )
 }
+
+data class CurrencyExchangeRatesResponse(
+    val timestamp: Int,
+    val base: String,
+    val rates: Map<String, BigDecimal>
+)

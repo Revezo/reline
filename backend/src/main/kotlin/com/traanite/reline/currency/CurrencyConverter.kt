@@ -56,7 +56,7 @@ class CurrencyConverter(private val currencyExchangeApiClient: CurrencyExchangeA
     }
 
     private fun convertToBaseCurrency(
-        currencyExchangeRates: CurrencyExchangeApiClient.CurrencyExchangeRatesResponse,
+        currencyExchangeRates: CurrencyExchangeRatesResponse,
         fromCurrency: Currency,
         amount: BigDecimal
     ): BigDecimal {
