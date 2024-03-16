@@ -27,7 +27,8 @@ class GlobalPetrolPricesScraper {
         val log: Logger = LoggerFactory.getLogger(GlobalPetrolPricesScraper::class.java)
     }
 
-    private val currency = Currency.getInstance("EUR")
+    // todo all these should be properties \/
+    private val currency = Currency.getInstance("USD")
     private val refreshPeriodSeconds: Long = 1
     private val limitForPeriod = 5
     private val timeoutDurationMinutes: Long = 5
@@ -35,6 +36,7 @@ class GlobalPetrolPricesScraper {
     private val baseUri = "https://www.globalpetrolprices.com/"
     private val dieselUri = "/diesel_prices/"
     private val gasolineUri = "/gasoline_prices/"
+    // todo all these should be properties /\
 
     // todo rate limiting doesn't work as expected here, causes HTTP 520
     private val rateLimiter = RateLimiter.of(

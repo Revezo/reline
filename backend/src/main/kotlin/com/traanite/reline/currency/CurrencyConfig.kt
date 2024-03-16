@@ -18,7 +18,6 @@ class CurrencyConfig(private val currencyApiProperties: CurrencyApiProperties) {
             .baseUrl(currencyApiProperties.baseUrl)
             .defaultHeaders { headers: HttpHeaders ->
                 headers.accept = Collections.singletonList(MediaType.APPLICATION_JSON)
-                headers["X-Api-Key"] = currencyApiProperties.apiKey
             }
             .build()
     }
@@ -28,5 +27,10 @@ class CurrencyConfig(private val currencyApiProperties: CurrencyApiProperties) {
 data class CurrencyApiProperties(
     val baseUrl: String,
     val apiKey: String,
-    val endpoint: String
+    val endpoints: CurrencyApiEndpoints
+)
+
+data class CurrencyApiEndpoints(
+    val exchangeRates: String,
+    val currencies: String
 )

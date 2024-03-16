@@ -23,6 +23,7 @@ class FuelPricesUpdater(
     }
 
     fun updateFuelPrices(): Flux<CountryFuelPriceData> {
+        // todo operation lock
         log.debug("Start updating procedure")
         val fuelPriceData = pricesScraper.getPrices()
         return fuelPricesService.saveAll(fuelPriceData)

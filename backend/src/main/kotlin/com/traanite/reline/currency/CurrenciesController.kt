@@ -1,25 +1,30 @@
 package com.traanite.reline.currency
 
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Mono
+import java.math.BigDecimal
 import java.util.*
 
 @RestController
-class CurrenciesController {
+class CurrenciesController(private val currencyConverter: CurrencyConverter) {
 
-    // todo limit currencies to the ones we support
-    // todo most important currencies on top (EUR, USD, GPB, PLN)
     @GetMapping("/currencies")
     fun getCurrencies(): Mono<AvailableCurrenciesResponse> {
-        return Mono.just(AvailableCurrenciesResponse(
-            Currency.getAvailableCurrencies().map { CurrencyResponse(it.displayName, it.currencyCode)}
-        ))
+        return currencyConverter.availableCurrencies()
+            .collectList()
+            .map { AvailableCurrenciesResponse(it) }
     }
 
-    data class AvailableCurrenciesResponse(val values: List<CurrencyResponse>)
-    data class CurrencyResponse(
-        val name: String,
-        val code: String
-    )
+    @GetMapping("/currencies/convert/{amount}/from/{fromCurrency}/to/{toCurrency}")
+    fun convertCurrency(
+        @PathVariable amount: BigDecimal,
+        @PathVariable fromCurrency: Currency,
+        @PathVariable toCurrency: Currency
+    ): Mono<BigDecimal> {
+        return currencyConverter.convertToCurrency(amount, fromCurrency, toCurrency)
+    }
+
+    data class AvailableCurrenciesResponse(val values: List<CurrencyData>)
 }
