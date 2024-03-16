@@ -6,9 +6,10 @@ fuel-prices:
     limitForPeriod: 20
     timeoutDurationMinutes: 1
   site:
-    baseUrl: https://www.globalpetrolprices.com/
-    dieselUri: /diesel_prices/
-    gasUri: /gasoline_prices/
+    base-url: https://www.globalpetrolprices.com/
+    endpoints:
+      diesel-prices: /diesel_prices/
+      gasoline-prices: /gasoline_prices/
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
