@@ -16,9 +16,7 @@ data class CountryFuelPriceData(
 
         other as CountryFuelPriceData
 
-        if (country != other.country) return false
-
-        return true
+        return country == other.country
     }
 
     override fun hashCode(): Int {
