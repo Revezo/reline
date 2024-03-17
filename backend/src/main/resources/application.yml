@@ -30,6 +30,7 @@ spring:
       uri: mongodb://root:example@localhost:27017/reline?authSource=admin
       database: reline
       authentication-database: admin
+      auto-index-creation: true
   security:
     user:
       password: password

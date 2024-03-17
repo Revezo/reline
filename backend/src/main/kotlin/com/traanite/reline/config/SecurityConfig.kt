@@ -44,6 +44,7 @@ class SecurityConfig {
             .headers { headerSpec ->
                 headerSpec.frameOptions { it.disable() }
             }
+            .csrf { it.disable() } // TODO: Enable CSRF https://docs.spring.io/spring-security/reference/servlet/exploits/csrf.html
             .build()
     }
 
