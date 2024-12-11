@@ -31,6 +31,7 @@ class SecurityConfig {
     fun springSecurityFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
         return http.authorizeExchange {
                 it
+                    .pathMatchers("/actuator/**").permitAll()
                     .pathMatchers(HttpMethod.POST, "*").denyAll() // todo
                     .anyExchange().authenticated()
             }
