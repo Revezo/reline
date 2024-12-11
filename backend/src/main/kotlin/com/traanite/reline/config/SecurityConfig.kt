@@ -32,8 +32,10 @@ class SecurityConfig {
         return http.authorizeExchange {
                 it
                     .pathMatchers("/actuator/**").permitAll()
-                    .pathMatchers(HttpMethod.POST, "*").denyAll() // todo
-                    .anyExchange().authenticated()
+                    .pathMatchers(HttpMethod.GET, "/currencies/**").authenticated()
+                    .pathMatchers(HttpMethod.GET, "/fuelprices/**").authenticated()
+//                    .pathMatchers(HttpMethod.POST, "*").denyAll() // todo
+                    .anyExchange().denyAll()
             }
             .httpBasic { }
             .cors {
