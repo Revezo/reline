@@ -38,3 +38,9 @@ logging:
   level:
     root: INFO
     com.traanite.reline.*: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info"
