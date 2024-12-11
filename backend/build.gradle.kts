@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.traanite"
-version = "1.0.0" // todo replace with property
+version = "1.0.1" // todo replace with property
 
 java {
 	sourceCompatibility = JavaVersion.VERSION_21

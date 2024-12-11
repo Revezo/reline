@@ -5,5 +5,6 @@ WORKDIR /app
 RUN gradle clean build
 
 FROM openjdk:21-jdk
-COPY --from=build /app/build/libs/reline-1.0.0.jar /usr/local/lib/app.jar
+ARG version
+COPY --from=build /app/build/libs/reline-${version}.jar /usr/local/lib/app.jar
 ENTRYPOINT ["java","-jar","/usr/local/lib/app.jar"]
