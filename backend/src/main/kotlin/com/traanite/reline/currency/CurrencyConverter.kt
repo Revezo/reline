@@ -16,7 +16,7 @@ private val logger = KotlinLogging.logger {}
 class CurrencyConverter(private val currencyExchangeApiClient: CurrencyExchangeApiClient) {
 
     // todo save rates in the database, update them every x hours, @Cacheable calls from the database
-    @Scheduled(timeUnit = TimeUnit.HOURS, fixedRate = 6)
+    @Scheduled(timeUnit = TimeUnit.HOURS, fixedRate = 24)
     private fun initializeCaches() {
         logger.info { "CurrencyConverter initialized" }
         currencyExchangeApiClient.currencyExchangeRates().subscribe()

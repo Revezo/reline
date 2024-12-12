@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.util.*
 
 private val log = KotlinLogging.logger {}
@@ -46,8 +47,8 @@ class FuelPricesService(
             CountryFuelPriceDataDto(
                 fuelPriceData.country.value,
                 currency.currencyCode,
-                it.t1,
-                it.t2
+                it.t1.setScale(2, RoundingMode.HALF_EVEN),
+                it.t2.setScale(2, RoundingMode.HALF_EVEN)
             )
         }
     }

@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {FuelPrices} from "../models/fuel-prices";
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +19,6 @@ export class FuelPricesService {
       params: new HttpParams().set('currencyCode', currencyCode)
     };
 
-    return this.httpClient.get<FuelPrices>('http://localhost:8080/fuelprices', httpOptions);
+    return this.httpClient.get<FuelPrices>(`${environment.backendUrl}/fuelprices`, httpOptions);
   }
 }

@@ -1,6 +1,6 @@
 fuel-prices:
   scheduled-update:
-    cron: 0 0/5 * * * ? # every 5 minutes
+    cron: 0 0 */6 * * ?
   rateLimit:
     refreshPeriodSeconds: 1
     limitForPeriod: 20
@@ -38,3 +38,9 @@ logging:
   level:
     root: INFO
     com.traanite.reline.*: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info"

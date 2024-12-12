@@ -1,8 +1,10 @@
-FROM openjdk:17-jdk
+FROM gradle:8.6.0-jdk21 AS build
 
-EXPOSE 8080
+COPY ./ /app/
 WORKDIR /app
-ARG JAR=*.jar
+RUN gradle clean build
 
-COPY  /build/libs/$JAR /app.jar
-ENTRYPOINT ["java","-jar","/app.jar"]
+FROM openjdk:21-jdk
+ARG version
+COPY --from=build /app/build/libs/reline-${version}.jar /usr/local/lib/app.jar
+ENTRYPOINT ["java","-jar","/usr/local/lib/app.jar"]

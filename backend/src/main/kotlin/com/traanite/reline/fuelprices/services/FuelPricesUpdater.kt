@@ -6,7 +6,7 @@ import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 
-private val log = KotlinLogging.logger {}
+private val log = KotlinLogging.logger { }
 
 @Service
 class FuelPricesUpdater(
@@ -16,7 +16,7 @@ class FuelPricesUpdater(
 
     @Scheduled(cron = "\${fuel-prices.scheduled-update.cron}")
     private fun updateFuelPricesScheduledTask() {
-        log.debug {"Updating fuel prices" }
+        log.debug { "Updating fuel prices" }
         updateFuelPrices().subscribe()
     }
 

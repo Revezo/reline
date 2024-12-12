@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {Currencies} from "../models/currencies";
+import {environment} from "../../environments/environment";
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +19,7 @@ export class CurrenciesService {
       })
     };
 
-    return this.httpClient.get<Currencies>('http://localhost:8080/currencies', httpOptions);
+    return this.httpClient.get<Currencies>(`${environment.backendUrl}/currencies`, httpOptions);
   }
 
 }
