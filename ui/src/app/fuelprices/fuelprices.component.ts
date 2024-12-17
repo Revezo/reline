@@ -12,18 +12,19 @@ import {MatAutocompleteModule} from "@angular/material/autocomplete";
 import {map, Observable, startWith} from "rxjs";
 
 @Component({
-    selector: 'app-fuelprices',
-    imports: [
-        FormsModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatAutocompleteModule,
-        ReactiveFormsModule,
-        AsyncPipe,
-        MatTableModule
-    ],
-    templateUrl: './fuelprices.component.html',
-    styleUrl: './fuelprices.component.css'
+  selector: 'app-fuelprices',
+  imports: [
+    FormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatAutocompleteModule,
+    ReactiveFormsModule,
+    AsyncPipe,
+    MatTableModule
+  ],
+  templateUrl: './fuelprices.component.html',
+  standalone: true,
+  styleUrl: './fuelprices.component.css'
 })
 export class FuelPricesComponent implements OnInit {
   INITIAL_CURRENCY_CODE = 'EUR';
