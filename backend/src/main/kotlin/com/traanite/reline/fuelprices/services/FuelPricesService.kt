@@ -2,6 +2,8 @@ package com.traanite.reline.fuelprices.services
 
 import com.traanite.reline.currency.CurrencyConverter
 import com.traanite.reline.fuelprices.model.CountryFuelPriceData
+import com.traanite.reline.fuelprices.model.LatestCountryFuelPriceData
+import com.traanite.reline.fuelprices.repository.FuelAggregationRepository
 import com.traanite.reline.fuelprices.repository.FuelPricesRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
@@ -16,6 +18,7 @@ private val log = KotlinLogging.logger {}
 @Service
 class FuelPricesService(
     private val pricesRepository: FuelPricesRepository,
+    private val aggregationRepository: FuelAggregationRepository,
     private val currencyConverter: CurrencyConverter
 ) {
 
@@ -24,13 +27,15 @@ class FuelPricesService(
         return pricesRepository.saveAll(fuelPriceData)
     }
 
+    // todo caching here, evict cache after prices update
     fun findAllInWithCurrencyConversion(currency: Currency): Flux<CountryFuelPriceDataDto> {
         log.debug { "Finding all fuel prices in currency: $currency" }
-        return pricesRepository.findAll().flatMap { toCurrencyConvertedDto(it, currency) }
+        return aggregationRepository.findLatestFuelPriceData()
+            .flatMap { toCurrencyConvertedDto(it, currency) }
     }
 
     private fun toCurrencyConvertedDto(
-        fuelPriceData: CountryFuelPriceData,
+        fuelPriceData: LatestCountryFuelPriceData,
         currency: Currency
     ): Mono<CountryFuelPriceDataDto> {
         return currencyConverter.convertToCurrency(
@@ -45,7 +50,7 @@ class FuelPricesService(
             )
         ).map {
             CountryFuelPriceDataDto(
-                fuelPriceData.country.value,
+                fuelPriceData.id.value,
                 currency.currencyCode,
                 it.t1.setScale(2, RoundingMode.HALF_EVEN),
                 it.t2.setScale(2, RoundingMode.HALF_EVEN)

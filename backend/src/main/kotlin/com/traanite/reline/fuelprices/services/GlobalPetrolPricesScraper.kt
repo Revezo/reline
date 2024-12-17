@@ -7,6 +7,7 @@ import com.traanite.reline.fuelprices.model.FuelType
 import io.github.resilience4j.ratelimiter.RateLimiter
 import io.github.resilience4j.ratelimiter.RateLimiterConfig
 import io.github.resilience4j.reactor.ratelimiter.operator.RateLimiterOperator
+import org.bson.types.ObjectId
 import org.jsoup.Jsoup
 import org.jsoup.select.Elements
 import org.slf4j.Logger
@@ -18,6 +19,7 @@ import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
 import java.math.BigDecimal
 import java.time.Duration
+import java.time.ZonedDateTime
 import java.util.*
 import java.util.regex.Pattern
 
@@ -59,6 +61,8 @@ class GlobalPetrolPricesScraper {
             .flatMap { idFlux ->
                 idFlux.collectList().map { fuelPricesOfCountry ->
                     CountryFuelPriceData(
+                        ObjectId(),
+                        ZonedDateTime.now(),
                         idFlux.key(),
                         fuelPricesOfCountry.firstOrNull { it.fuelType == FuelType.Gasoline } ?: FuelPrice(FuelType.Gasoline, currency),
                         fuelPricesOfCountry.firstOrNull { it.fuelType == FuelType.Diesel } ?: FuelPrice(FuelType.Diesel, currency))

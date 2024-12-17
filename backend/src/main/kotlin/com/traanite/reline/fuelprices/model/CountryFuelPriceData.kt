@@ -1,11 +1,21 @@
 package com.traanite.reline.fuelprices.model
 
+import org.bson.types.ObjectId
+import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
+import java.time.ZonedDateTime
 
 @Document(collection = "FuelPrices")
 data class CountryFuelPriceData(
-    @Id val country: Country,
+    @Id
+    val id: ObjectId,
+    @Indexed(unique = false)
+    @CreatedDate
+    val createdAt: ZonedDateTime,
+    @Indexed(unique = false)
+    val country: Country,
     val gasolineData: FuelPrice,
     val dieselData: FuelPrice
 ) {
