@@ -13,8 +13,7 @@ export class FuelPricesService {
   getFuelPrices(currencyCode: string): Observable<FuelPrices> {
     const httpOptions = {
       headers: new HttpHeaders({
-        'Content-Type':  'application/json',
-        'Authorization': 'Basic ' + btoa('user:user')
+        'Content-Type':  'application/json'
       }),
       params: new HttpParams().set('currencyCode', currencyCode)
     };

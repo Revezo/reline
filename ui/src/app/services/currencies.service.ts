@@ -14,8 +14,7 @@ export class CurrenciesService {
   getAvailableCurrencies(): Observable<Currencies> {
     const httpOptions = {
       headers: new HttpHeaders({
-        'Content-Type':  'application/json',
-        'Authorization': 'Basic ' + btoa('user:user')
+        'Content-Type':  'application/json'
       })
     };
 
