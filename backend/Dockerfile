@@ -1,4 +1,4 @@
-FROM 8.11.1-jdk23 AS build
+FROM gradle:8.11.1-jdk23 AS build
 
 COPY ./ /app/
 WORKDIR /app

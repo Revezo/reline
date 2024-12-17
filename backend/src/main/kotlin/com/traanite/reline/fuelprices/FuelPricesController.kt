@@ -4,6 +4,7 @@ import com.traanite.reline.fuelprices.services.CountryFuelPriceDataDto
 import com.traanite.reline.fuelprices.services.FuelPricesService
 import com.traanite.reline.fuelprices.services.FuelPricesUpdater
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.data.domain.Sort
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
 import java.util.*
@@ -20,9 +21,10 @@ class FuelPricesController(
     @GetMapping
     fun getStoredGasolinePrices(
         @RequestParam(name = "currencyCode", required = false, defaultValue = "EUR")
-        currencyCode: String
+        currencyCode: String, sort: Sort
     ): Mono<FuelPricesResponse> {
         return fuelPricesService.findAllInWithCurrencyConversion(Currency.getInstance(currencyCode))
+            .sort(compareBy { it.country })
             .collectList()
             .map {
                 val response = FuelPricesResponse(it)
