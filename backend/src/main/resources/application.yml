@@ -1,6 +1,6 @@
 fuel-prices:
   scheduled-update:
-    cron: 0 0 */6 * * ?
+    cron: 0 0 6 * * ?
   rateLimit:
     refreshPeriodSeconds: 1
     limitForPeriod: 20
