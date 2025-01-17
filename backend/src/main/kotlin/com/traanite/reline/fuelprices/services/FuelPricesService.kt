@@ -31,7 +31,6 @@ class FuelPricesService(
     fun findAllInWithCurrencyConversion(currency: Currency): Flux<CountryFuelPriceDataDto> {
         log.debug { "Finding all fuel prices in currency: $currency" }
         return aggregationRepository.findLatestFuelPriceData()
-            // todo fix so it uses only one call to API
             .flatMap { toCurrencyConvertedDto(it, currency) }
     }
 

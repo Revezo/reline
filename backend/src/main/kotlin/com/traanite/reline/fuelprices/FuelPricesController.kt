@@ -19,10 +19,10 @@ class FuelPricesController(
 
     @GetMapping
     fun getStoredGasolinePrices(
-        @RequestParam(name = "currencyCode", required = false, defaultValue = "EUR")
+        @RequestParam(name = "currencyCode", required = true, defaultValue = "EUR")
         currencyCode: String
     ): Mono<FuelPricesResponse> {
-        return fuelPricesService.findAllInWithCurrencyConversion(Currency.getInstance(currencyCode))
+        return fuelPricesService.findAllInWithCurrencyConversion(Currency.getInstance(currencyCode.uppercase()))
             .sort(compareBy { it.country })
             .collectList()
             .map {

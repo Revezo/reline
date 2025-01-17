@@ -1,6 +1,7 @@
 package com.traanite.reline.currency
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.bson.types.ObjectId
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
@@ -13,37 +14,45 @@ import java.util.concurrent.TimeUnit
 private val logger = KotlinLogging.logger {}
 
 @Service
-class CurrencyConverter(private val currencyExchangeApiClient: CurrencyExchangeApiClient) {
+class CurrencyConverter(
+    private val currencyExchangeApiClient: CurrencyExchangeApiClient,
+    private val currencyExchangeRatesRepository: CurrencyExchangeRatesRepository) {
 
-    // todo save rates in the database, update them every x hours, @Cacheable calls from the database
     @Scheduled(timeUnit = TimeUnit.HOURS, fixedRate = 24)
     private fun initializeCaches() {
         logger.info { "CurrencyConverter initialized" }
-        currencyExchangeApiClient.currencyExchangeRates().subscribe()
-        currencyExchangeApiClient.availableCurrencies().subscribe()
+        currencyExchangeApiClient.currencyExchangeRates()
+            .flatMap {
+                val currencyExchangeRates =
+                    CurrencyExchangeRates(ObjectId(), it.timestamp, Currency.getInstance(it.base), it.rates)
+                currencyExchangeRatesRepository.save(currencyExchangeRates)
+            }
+            .subscribe()
     }
 
     fun convertToCurrency(amount: BigDecimal, fromCurrency: Currency, toCurrency: Currency): Mono<BigDecimal> {
         if (fromCurrency == toCurrency) {
             return Mono.just(amount)
         }
-        return currencyExchangeApiClient.currencyExchangeRates()
-            .map {
-                if (it.base == fromCurrency.currencyCode) {
-                    it.rates.getOrDefault(toCurrency.currencyCode, BigDecimal.ZERO)
-                        .multiply(amount)
-                } else {
-                    val amountInBaseCurrency = convertToBaseCurrency(it, fromCurrency, amount)
-                    it.rates.getOrDefault(toCurrency.currencyCode, BigDecimal.ZERO)
-                        .multiply(amountInBaseCurrency)
+        return Mono.defer {
+            currencyExchangeRatesRepository.findFirstByOrderByIdDesc()
+                .map {
+                    if (it.baseCurrency == fromCurrency) {
+                        it.rates.getOrDefault(toCurrency.currencyCode, BigDecimal.ZERO)
+                            .multiply(amount)
+                    } else {
+                        val amountInBaseCurrency = convertToBaseCurrency(it, fromCurrency, amount)
+                        it.rates.getOrDefault(toCurrency.currencyCode, BigDecimal.ZERO)
+                            .multiply(amountInBaseCurrency)
+                    }
                 }
-            }
-            .doOnError {
-                logger.error {
-                    "Error converting currency. amount=${amount}, " +
-                            "fromCurrency=${fromCurrency}, toCurrency=${toCurrency}"
+                .doOnError {
+                    logger.error {
+                        "Error converting currency. amount=${amount}, " +
+                                "fromCurrency=${fromCurrency}, toCurrency=${toCurrency}"
+                    }
                 }
-            }
+        }
     }
 
     fun availableCurrencies(): Flux<CurrencyData> {
@@ -56,7 +65,7 @@ class CurrencyConverter(private val currencyExchangeApiClient: CurrencyExchangeA
     }
 
     private fun convertToBaseCurrency(
-        currencyExchangeRates: CurrencyExchangeRatesResponse,
+        currencyExchangeRates: CurrencyExchangeRates,
         fromCurrency: Currency,
         amount: BigDecimal
     ): BigDecimal {
