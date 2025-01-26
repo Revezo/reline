@@ -1,0 +1,52 @@
+name: pipeline
+on:
+ push:
+   branches:
+     - "main"  
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to the docker registry
+        uses: docker/login-action@v3
+        with:
+          registry: https://docker.io
+          username: ${{ secrets.DOCKER_REGISTRY_USER }}
+          password: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
+
+      - name: Build and push Backend Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          push: true
+          tags: |
+            docker.io/wukashr/reline-backend:latest
+            docker.io/wukashr/reline-backend:${{ github.sha }}
+
+      - name: Build and push UI Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./ui
+          push: true
+          tags: |
+            docker.io/wukashr/reline-ui:latest
+            docker.io/wukashr/reline-ui:${{ github.sha }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs:
+      - build-and-push-image
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Coolify Redeploy Backend
+      run: curl --location "${{ secrets.BE_RESTART_URL }}" --header "${{ secrets.COOLIFY_AUTH_HEADER }}"
+      
+    - name: Coolify Redeploy UI
+      run: curl --location "${{ secrets.UI_RESTART_URL }}" --header "${{ secrets.COOLIFY_AUTH_HEADER }}"
+      
