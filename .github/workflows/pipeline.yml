@@ -39,7 +39,9 @@ jobs:
         with:
           context: ./backend
           push: true
-          tags: wukashr/reline-backend:${{ github.sha }}
+          tags: |
+            wukashr/reline-backend:latest
+            wukashr/reline-backend:${{ github.sha }}
 
       - name: Build and push UI Docker image
         uses: docker/build-push-action@v6
