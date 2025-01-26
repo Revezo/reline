@@ -1,6 +1,7 @@
 package com.traanite.reline.currency
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import jakarta.annotation.PostConstruct
 import org.bson.types.ObjectId
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
@@ -9,7 +10,6 @@ import reactor.core.publisher.Mono
 import java.math.BigDecimal
 import java.math.MathContext
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 private val logger = KotlinLogging.logger {}
 
@@ -18,8 +18,13 @@ class CurrencyConverter(
     private val currencyExchangeApiClient: CurrencyExchangeApiClient,
     private val currencyExchangeRatesRepository: CurrencyExchangeRatesRepository) {
 
-    @Scheduled(timeUnit = TimeUnit.HOURS, fixedRate = 24)
-    private fun initializeCaches() {
+    @PostConstruct
+    private fun init() {
+        updateCurrencyPrices()
+    }
+
+    @Scheduled(cron = "0 0 4 * * *")
+    private fun updateCurrencyPrices() {
         logger.info { "CurrencyConverter initialized" }
         currencyExchangeApiClient.currencyExchangeRates()
             .flatMap {
