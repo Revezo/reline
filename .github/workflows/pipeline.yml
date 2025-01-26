@@ -8,9 +8,12 @@ jobs:
   run-tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Test with Gradle wrapper
-        run: ./gradlew clean test
+      - name: Checkout sources
+        uses: actions/checkout@v4
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+      - name: Test with Gradle
+        run: ./gradlew test
 
   build-and-push-image:
     runs-on: ubuntu-latest
