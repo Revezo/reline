@@ -38,5 +38,4 @@ class FuelPricesController(
     }
 
     data class FuelPricesResponse(val values: List<CountryFuelPriceDataDto>)
-    // todo round prices to 2 decimal points
 }

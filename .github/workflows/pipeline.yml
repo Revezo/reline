@@ -5,8 +5,17 @@ on:
      - "main"  
 
 jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test with Gradle wrapper
+        run: ./gradlew clean test
+
   build-and-push-image:
     runs-on: ubuntu-latest
+    needs:
+      - run-tests
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -46,7 +55,7 @@ jobs:
 
     - name: Coolify Redeploy Backend
       run: curl --location "${{ secrets.BE_RESTART_URL }}" --header "${{ secrets.COOLIFY_AUTH_HEADER }}"
-      
+
     - name: Coolify Redeploy UI
       run: curl --location "${{ secrets.UI_RESTART_URL }}" --header "${{ secrets.COOLIFY_AUTH_HEADER }}"
       

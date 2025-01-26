@@ -40,7 +40,7 @@ class GlobalPetrolPricesScraper {
     private val gasolineUri = "/gasoline_prices/"
     // todo all these should be properties /\
 
-    // todo rate limiting doesn't work as expected here, causes HTTP 520
+    // todo used to cause HTTP 520, verify if still does
     private val rateLimiter = RateLimiter.of(
         "global-petrol-prices-rate-limiter",
         RateLimiterConfig.custom()
@@ -84,6 +84,7 @@ class GlobalPetrolPricesScraper {
             .flatMap { processValuePage(it, fuelType) }
     }
 
+    // todo should be a bean
     private fun newWebClient(): WebClient {
         return WebClient.builder()
             .defaultCookie("my_session_id", UUID.randomUUID().toString())

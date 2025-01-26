@@ -2,9 +2,10 @@ FROM gradle:8.11.1-jdk23 AS build
 
 COPY ./ /app/
 WORKDIR /app
-RUN gradle clean build
+RUN gradle --no-daemon clean build -x test
 
 FROM openjdk:23-jdk
 ARG version
-COPY --from=build /app/build/libs/reline-${version}.jar /usr/local/lib/app.jar
+# todo stopgap solution until I figure what to do about versioning
+COPY --from=build /app/build/libs/reline-*.jar /usr/local/lib/app.jar
 ENTRYPOINT ["java","-jar","/usr/local/lib/app.jar"]
